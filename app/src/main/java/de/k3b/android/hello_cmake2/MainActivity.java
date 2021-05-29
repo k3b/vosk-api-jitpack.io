@@ -31,11 +31,6 @@ public class MainActivity extends AppCompatActivity {
         HelloNative hello = new HelloNative();
 
         tv.setText(hello.stringFromJNI());
+        hello.openblas_set_num_threads(0);
     }
-
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
 }

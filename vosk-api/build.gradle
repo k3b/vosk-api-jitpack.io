@@ -26,6 +26,7 @@ android {
             cmake {
                 cppFlags '-std=c++17'
                 targets "native-lib"
+                arguments "-DONLY_CBLAS=1", "-DHOSTCC=gcc", "-DARM_SOFTFP_ABI=1", "-DUSE_THREAD=0", "-D NUM_THREADS=1", "-DROOTDIR=${project.projectDir}", "-j4"
             }
         }
     }

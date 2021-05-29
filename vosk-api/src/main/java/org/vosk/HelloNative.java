@@ -12,4 +12,5 @@ public class HelloNative {
      */
     public native String stringFromJNI();
 
+    public native void openblas_set_num_threads(int num_threads);
 }

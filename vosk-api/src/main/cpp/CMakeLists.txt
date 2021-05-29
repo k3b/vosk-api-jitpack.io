@@ -51,11 +51,6 @@ target_link_libraries( # Specifies the target library.
 if(true)
     # parameter from build-vosk.sh
     # make -C OpenBLAS TARGET=... ONLY_CBLAS=1 AR=$AR CC=$CC HOSTCC=gcc ARM_SOFTFP_ABI=1 USE_THREAD=0 NUM_THREADS=1 -j4
-    set(ONLY_CBLAS 1)
-    set(HOSTCC gcc)
-    set(ARM_SOFTFP_ABI 1)
-    set(USE_THREAD 0)
-    set(NUM_THREADS 1)
     if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
         set(TARGET ARMV7)
         set(AR arm-linux-androideabi-ar)
@@ -89,14 +84,15 @@ if(true)
         set(ARCHFLAGS "")
     endif()
 
-    set( prj_root_dir ../../..)
+    set( prj_root_dir ${ROOTDIR})
             # message(FATAL_ERROR "hello world ")
     # Sets lib_src_DIR to the path of the target CMake project.
-    set( lib_src_DIR "${prj_root_dir}/cloned-repositories/OpenBLAS" )
+    set( lib_src_DIR "${prj_root_dir}/src/main/cpp/clonedRepositories/OpenBLAS" )
 
+    include( "${lib_src_DIR}/Makefile.system" )
 
     # Sets lib_build_DIR to the path of the desired output directory.
-    set( lib_build_DIR "${lib_src_DIR}/build/OpenBLAS/${ANDROID_ABI}" )
+    set( lib_build_DIR "${prj_root_dir}/build/OpenBLAS/${ANDROID_ABI}" )
     file(MAKE_DIRECTORY ${lib_build_DIR})
 
     message(AUTHOR_WARNING "lib_src_DIR=${lib_src_DIR} ")
@@ -114,11 +110,11 @@ if(true)
 
     # Adds the output of the additional CMake build as a prebuilt static
     # library and names it lib_gmath.
-    add_library( lib_gmath STATIC IMPORTED )
-    set_target_properties( lib_gmath PROPERTIES IMPORTED_LOCATION
-            ${lib_build_DIR}/${ANDROID_ABI}/lib_gmath.a )
-    include_directories( ${lib_src_DIR}/include )
+    #add_library( lib_OpenBLAS STATIC IMPORTED )
+    #set_target_properties( lib_OpenBLAS PROPERTIES IMPORTED_LOCATION
+    #        ${lib_build_DIR}/${ANDROID_ABI}/lib_OpenBLAS.a )
+    include_directories( ${lib_src_DIR} )
 
     # Links the top-level CMake build output against lib_gmath.
-    target_link_libraries( native-lib ... lib_gmath )
+    #target_link_libraries( native-lib ... lib_OpenBLAS )
 endif()
