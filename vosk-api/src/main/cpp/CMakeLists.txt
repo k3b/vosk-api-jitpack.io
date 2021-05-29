@@ -48,31 +48,77 @@ target_link_libraries( # Specifies the target library.
                        ${log-lib} )
 #-----------------------------------------------------
 
-if(NOT DEFINED TARGET)
-    set(TARGET ATOM)
+if(true)
+    # parameter from build-vosk.sh
+    # make -C OpenBLAS TARGET=... ONLY_CBLAS=1 AR=$AR CC=$CC HOSTCC=gcc ARM_SOFTFP_ABI=1 USE_THREAD=0 NUM_THREADS=1 -j4
+    set(ONLY_CBLAS 1)
+    set(HOSTCC gcc)
+    set(ARM_SOFTFP_ABI 1)
+    set(USE_THREAD 0)
+    set(NUM_THREADS 1)
+    if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+        set(TARGET ARMV7)
+        set(AR arm-linux-androideabi-ar)
+        set(HOST arm-linux-androideabi)
+        set(CC armv7a-linux-androideabi21-clang)
+        set(CXX armv7a-linux-androideabi21-clang++)
+        set(ARCHFLAGS "-mfloat-abi=softfp -mfpu=neon")
+    endif()
+    if(${ANDROID_ABI} STREQUAL "arm64-v8a")
+        set(TARGET ARMV8)
+        set(HOST aarch64-linux-android)
+        set(AR aarch64-linux-android-ar)
+        set(CC aarch64-linux-android21-clang)
+        set(CXX aarch64-linux-android21-clang++)
+        set(ARCHFLAGS "")
+    endif()
+    if(${ANDROID_ABI} STREQUAL "x86_64")
+        set(TARGET ATOM)
+        set(HOST x86_64-linux-android)
+        set(AR x86_64-linux-android-ar)
+        set(CC x86_64-linux-android21-clang)
+        set(CXX x86_64-linux-android21-clang++)
+        set(ARCHFLAGS "")
+    endif()
+    if(${ANDROID_ABI} STREQUAL "x86")
+        set(TARGET ATOM)
+        set(HOST i686-linux-android)
+        set(AR i686-linux-android-ar)
+        set(CC i686-linux-android21-clang)
+        set(CXX i686-linux-android21-clang++)
+        set(ARCHFLAGS "")
+    endif()
+
+    set( prj_root_dir ../../..)
+            # message(FATAL_ERROR "hello world ")
+    # Sets lib_src_DIR to the path of the target CMake project.
+    set( lib_src_DIR "${prj_root_dir}/cloned-repositories/OpenBLAS" )
+
+
+    # Sets lib_build_DIR to the path of the desired output directory.
+    set( lib_build_DIR "${lib_src_DIR}/build/OpenBLAS/${ANDROID_ABI}" )
+    file(MAKE_DIRECTORY ${lib_build_DIR})
+
+    message(AUTHOR_WARNING "lib_src_DIR=${lib_src_DIR} ")
+    message(AUTHOR_WARNING "lib_build_DIR=${lib_build_DIR}")
+    set(PROJECT_BINARY_DIR ${lib_build_DIR})
+    message(AUTHOR_WARNING "PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}")
+
+    # Adds the CMakeLists.txt file located in the specified directory
+    # as a build dependency.
+    add_subdirectory( # Specifies the directory of the CMakeLists.txt file.
+            ${lib_src_DIR}
+
+            # Specifies the directory for the build outputs.
+            ${lib_build_DIR} )
+
+    # Adds the output of the additional CMake build as a prebuilt static
+    # library and names it lib_gmath.
+    add_library( lib_gmath STATIC IMPORTED )
+    set_target_properties( lib_gmath PROPERTIES IMPORTED_LOCATION
+            ${lib_build_DIR}/${ANDROID_ABI}/lib_gmath.a )
+    include_directories( ${lib_src_DIR}/include )
+
+    # Links the top-level CMake build output against lib_gmath.
+    target_link_libraries( native-lib ... lib_gmath )
 endif()
-
-# Sets lib_src_DIR to the path of the target CMake project.
-set( lib_src_DIR ./../../../cloned-repositories/OpenBLAS )
-
-# Sets lib_build_DIR to the path of the desired output directory.
-set( lib_build_DIR ./../../../build/OpenBLAS )
-file(MAKE_DIRECTORY ${lib_build_DIR})
-
-# Adds the CMakeLists.txt file located in the specified directory
-# as a build dependency.
-add_subdirectory( # Specifies the directory of the CMakeLists.txt file.
-        ${lib_src_DIR}
-
-        # Specifies the directory for the build outputs.
-        ${lib_build_DIR} )
-
-# Adds the output of the additional CMake build as a prebuilt static
-# library and names it lib_gmath.
-add_library( lib_gmath STATIC IMPORTED )
-set_target_properties( lib_gmath PROPERTIES IMPORTED_LOCATION
-        ${lib_build_DIR}/${ANDROID_ABI}/lib_gmath.a )
-include_directories( ${lib_src_DIR}/include )
-
-# Links the top-level CMake build output against lib_gmath.
-target_link_libraries( native-lib ... lib_gmath )
