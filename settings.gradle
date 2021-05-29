@@ -4,7 +4,7 @@ plugins {
 
 git {
     fetch 'https://github.com/xianyi/OpenBLAS.git', {
-        dir "$rootDir/vosk-api/libs/OpenBLAS"
+        dir "$rootDir/vosk-api/cloned-repositories/OpenBLAS"
         tag 'v0.3.15'
     }
 }
