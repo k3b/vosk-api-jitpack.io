@@ -2,6 +2,15 @@ plugins {
     id 'com.android.library'
 }
 
+/* not working because there is no build.gradle
+git {
+    implementation 'https://github.com/xianyi/OpenBLAS.git', {
+        // dir "$rootDir/libs/OpenBLAS"
+        tag 'v0.3.15'
+    }
+}
+*/
+
 android {
     compileSdkVersion 30
 
@@ -16,6 +25,7 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags '-std=c++17'
+                targets "native-lib"
             }
         }
     }
@@ -35,6 +45,23 @@ android {
             path file('src/main/cpp/CMakeLists.txt')
             version '3.10.2'
         }
+        /* TODO !!!
+
+        // downloaded from 'https://github.com/xianyi/OpenBLAS.git' to vosk-api/libs/OpenBLAS (see settings.gradle)
+        cmake {
+            path file('libs/OpenBLAS/CMakeLists.txt')
+            // err When cross compi"ling, a TARGET is required.
+            version '3.10.2'
+        }
+
+        in libs/OpenBLAS/CMakeLists.txt we need something like similar to src/main/cpp/CMakeLists.txt
+
+        if (ANDROID)
+           target_link_libraries(native-lib SHARED ?????)
+        endif ()
+
+
+         */
     }
 }
 

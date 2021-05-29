@@ -1,3 +1,14 @@
+plugins {
+    id 'com.alexvasilkov.git-dependencies' version '2.0.1'
+}
+
+git {
+    fetch 'https://github.com/xianyi/OpenBLAS.git', {
+        dir "$rootDir/vosk-api/libs/OpenBLAS"
+        tag 'v0.3.15'
+    }
+}
+
 rootProject.name = "Hello-cmake2"
 include ':app'
 include ':vosk-api'
